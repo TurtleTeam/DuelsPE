@@ -1,0 +1,46 @@
+#Language File for DuelsPE.
+#You may use & or § MCPE color codes.
+---
+####################
+#              General
+####################
+#Message Prefix
+prefix: "&l&7[&e»&r&cDuelsPE&e&l«&7]&r"
+#Creating an Arena
+no-perm: "&cYou do not have permission to create Arenas!"
+#Command Usage
+command-usage: "&6Usage: /duel [join | quit | 1 | 2 | create]"
+pos1-set: "&aPosition 1 set!"
+pos2-set: "&aPosition 2 set!"
+arena-set: "&aArena successfully created!"
+
+####################
+#               Queue
+####################
+#Joining a queue
+queue-join: "&aLooking for a match..."
+#Found a match
+queue-find: "&aOpponent found!"
+#Already in queue
+in-queue: "&cYou are already in the queue!"
+#Not in queue
+not-in-queue: "&cYou aren't in a queue!"
+
+####################
+#                 Duel
+####################
+#%s = Seconds left in countdown
+duel-countdown: "&aDuel starting in %s seconds"
+#%p = Duel Opponent
+duel-start: "&aDuel against %p has started!"
+#%t = Time left in duel. Format: M:SS
+#Will display as popup.
+duel-timer: "&aTime left in duel: %t"
+#%w = Winner's name
+#%l = Loser's name
+duel-end: "&a%w has won a duel against %l!"
+#How should duel-end be displayed? Options: all = All players online, players = Only those who participated in the duel
+duel-end-type: all
+duel-lose: "&cYou lost the duel."
+duel-win: "&aYou won the duel!"
+in-game: "&cYou are already in a duel..."

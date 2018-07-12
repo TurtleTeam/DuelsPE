@@ -1,0 +1,52 @@
+#Config File for DuelsPE
+---
+#Plugin by corytortoise
+
+######################
+#            Match Settings          
+######################
+
+#How long the countdown to a match is in seconds.
+match-countdown: 5
+#How long each round lasts in seconds.
+time-limit: 180
+
+#Whether or not tapping a Duel sign adds you to the queue.
+sign-join: true
+
+#What you must write on the first line of the sign to create a Duel Sign.
+sign-text: "[duel]"
+
+#Should kits be forced? If false, players will duel with the items they have with them.
+#If true, their inventories will be cleared and they will receive the configured kits.
+force-kits: true
+
+######################
+#                  Kits          
+######################
+
+#Maybe add support for kit plugins later?
+
+#This will only be used if "force-kits" is set to true.
+kit:
+#Kit type. Options: custom, default. 
+  type: custom
+#Format: "ID:Damage:Count:EnchantmentID:EnchantmentLevel:SecondEnchantmentID:SecondEnchantmentLevel"
+#You can add as many enchantments as you wish.
+  items:
+  - "276:0:1:9:2"
+  - "364:0:16"
+#Format: 
+  #ArmorType: "ID:Damage:EnchantmentID:EnchantmentLevel:SecondEnchantmentID:SecondEnchantmentLevel"
+  armor:
+    helmet: "306:0:1:2"
+    chestplate: 307
+    leggings: 308
+    boots: 309
+  #Format: EffectID:Amplifier:Duration
+  #Leave Amplifier at 0 for lowest level effect, and Duration is in seconds.
+  effects:
+    - "1:0:180"
+    
+  
+
