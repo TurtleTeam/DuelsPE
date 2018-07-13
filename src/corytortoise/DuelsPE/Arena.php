@@ -10,7 +10,8 @@
   namespace corytortoise\DuelsPE;
 
   use pocketmine\level\Location;
-  use pocketmine\item\Item;
+  use pocketmine\item\ItemFactory;
+  use pocketmine\item\ItemIds;
   use pocketmine\entity\Effect;
   use pocketmine\entity\EffectInstance;
   use pocketmine\item\enchantment\Enchantment;
@@ -25,7 +26,7 @@
     private $spawn1;
     private $spawn2;
 
-    private $players = array();
+    private $players = [];
 
     private $active = false;
 
@@ -140,7 +141,7 @@
           if($kitData["type"] === "custom") {
             foreach($kitData["items"] as $itemData) {
               $parsedData = explode(":", $itemData);
-              $item = Item::get($parsedData[0], $parsedData[1], $parsedData[2]);
+              $item = ItemFactory::get($parsedData[0], $parsedData[1], $parsedData[2]);
               $enchData = array_slice($itemData, 3);
               //Credits to AdvancedKits by Luca28pet for this.
               foreach($enchData as $key => $ench) {
@@ -151,18 +152,26 @@
               $p->getInventory()->addItem($item);
             }
               foreach($kitData["armor"] as $type => $data) {
+                $parsedData = explode(":", $data);
+                $enchData = array_slice($parsedData, 2);
+                $item = ItemFactory::get($parsedData[0], $parsedData[1]);
+                foreach($enchData as $key => $ench) {
+                  if($key % 2 === 0) {
+                    $item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment($ench), ($enchData[$key  + 1])));
+                  }
+                }
                 switch($type) {
                   case "helmet":
-
+                    $p->getArmorInventory()->setHelmet($item);
                     break;
                   case "chestplate":
-
+                    $p->getArmorInventory()->setChestplate($item);
                     break;
                   case "leggings":
-
+                    $p->getArmorInventory()->setLeggings($item);
                     break;
                   case "boots":
-
+                    $p->getArmorInventory()->setBoots($item);
                     break;
                 }
               }
@@ -196,6 +205,7 @@
       if($this->manager->plugin->getConfig()->get("duel-end-type") === "all") {
         $loser = $this->getOpponent($winner);
         $this->manager->plugin->getServer()->broadcastMessage($this->manager->plugin->getPrefix() . str_replace(["%w", "%l"], [$winner->getName(), $loser->getName()], Main::getMessage("duel-end")));
+        $this->restartArena();
         }
     }
 
@@ -211,6 +221,18 @@
 
         }
       }
+      $this->restartArena();
+    }
+
+    /**
+     * This method clears attributes of Arena to prepare it for the next set of players.
+     */
+    protected function restartArena() {
+      $this->beforeMatch = $manager->plugin->config->get("match-countdown");
+      $this->matchTime = $manager->plugin->config->get("time-limit");
+      $this->timer = $this->beforeMatch + $this->matchTime;
+      $this->players = [];
+      $this->active = false;
     }
 
   }
