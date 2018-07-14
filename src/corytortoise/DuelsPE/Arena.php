@@ -11,7 +11,6 @@
 
   use pocketmine\level\Location;
   use pocketmine\item\ItemFactory;
-  use pocketmine\item\ItemIds;
   use pocketmine\entity\Effect;
   use pocketmine\entity\EffectInstance;
   use pocketmine\item\enchantment\Enchantment;
@@ -23,8 +22,8 @@
 
     private $manager;
 
-    private $spawn1;
-    private $spawn2;
+    public $spawn1;
+    public $spawn2;
 
     private $players = [];
 
@@ -129,6 +128,7 @@
       $p->sendPopup(str_replace("%t", $m . ":" . $s, Main::getMessage("duel-timer")));
     }
 
+    //Maybe move this to a KitHandler class later, since kits don't rely on Arena. Or, let Arenas have different kits?
     public function kitHandler($players) {
       if(!$this->manager->plugin->getConfig()->get("force-kits")) {
         return;
@@ -138,12 +138,14 @@
          $kitData[] = $data;
         }
         foreach($players as $p) {
+          $p->getInventory()->clearAll();
+          $p->getArmorInventory()->clearAll();
           if($kitData["type"] === "custom") {
             foreach($kitData["items"] as $itemData) {
               $parsedData = explode(":", $itemData);
               $item = ItemFactory::get($parsedData[0], $parsedData[1], $parsedData[2]);
               $enchData = array_slice($itemData, 3);
-              //Credits to AdvancedKits by Luca28pet for this.
+              //Reference: AdvancedKits by Luca28pet.
               foreach($enchData as $key => $ench) {
                 if($key % 2 === 0) {
                   $item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment($ench), ($enchData[$key + 1])));
@@ -204,7 +206,12 @@
     public function endMatch($winner) {
       if($this->manager->plugin->getConfig()->get("duel-end-type") === "all") {
         $loser = $this->getOpponent($winner);
+        if($this->manager->plugin->getConfig()->get("force-kits")) {
+          $winner->getInventory->clearAll();
+          $winner->getArmorInventory->clearAll();
+        }
         $this->manager->plugin->getServer()->broadcastMessage($this->manager->plugin->getPrefix() . str_replace(["%w", "%l"], [$winner->getName(), $loser->getName()], Main::getMessage("duel-end")));
+        $this->manager->plugin->callEvent("end", $this);
         $this->restartArena();
         }
     }
@@ -217,6 +224,10 @@
       foreach($this->players as $player) {
         if($player->isOnline()) {
           $player->sendMessage($this->manager->plugin->getPrefix() . "Duel was stopped because " . $cause);
+          if($this->manager->plugin->getConfig()->get("force-kits")) {
+            $player->getInventory()->clearAll();
+            $player->getInventory()->clearAll();
+          }
           $player->teleport($player->getSpawn());
 
         }
@@ -228,8 +239,8 @@
      * This method clears attributes of Arena to prepare it for the next set of players.
      */
     protected function restartArena() {
-      $this->beforeMatch = $manager->plugin->config->get("match-countdown");
-      $this->matchTime = $manager->plugin->config->get("time-limit");
+      $this->beforeMatch = $this->manager->plugin->config->get("match-countdown");
+      $this->matchTime = $this->manager->plugin->config->get("time-limit");
       $this->timer = $this->beforeMatch + $this->matchTime;
       $this->players = [];
       $this->active = false;

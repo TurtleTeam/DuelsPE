@@ -33,6 +33,12 @@
       array_push($this->arenas, $arena);
     }
 
+    public function createArena($pos1, $pos2, $options = []) {
+      $arena = new Arena($this, $pos1, $pos2);
+      array_push($this->arenas, $arena);
+      $this->plugin->registerArena($arena);
+    }
+
     /**
      * Starts an Arena, beginning with pre-match countdown.
      * @param Player[] $players
@@ -58,7 +64,9 @@
      * This will be used later to hopefully prevent side effects of disabling the plugin mid-match
      */
     public function shutDown() {
-
+      foreach($this->arenas as $arena) {
+        $arena->stop("Plugin was disabled");
+      }
     }
 
     /**

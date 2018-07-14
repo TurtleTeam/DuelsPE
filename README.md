@@ -48,6 +48,10 @@ A: This is a question you should be asking yourself. Frankly, I won't(and can't)
 
 -> /duel [username] - Sends a duel request to another player
 
+### API Docs:
+
+ - Currently, you can detect when a match starts and ends 
+
 ### Credits:
 
  - Much of the kit system is inspired by AdvancedKits by Luca28pet. 

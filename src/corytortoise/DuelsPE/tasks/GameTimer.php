@@ -23,9 +23,10 @@
     public function onRun($currentTick) : void {
       foreach($this->plugin->manager->arenas as $arena) {
         if($arena->isActive()) {
-        $arena->tick();
+          $arena->tick();
         }
       }
+      $this->plugin->checkQueue();
     }
 
 

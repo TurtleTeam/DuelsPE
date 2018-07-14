@@ -120,9 +120,10 @@
       $this->plugin->manager->createArena($this->pos1[$player->getName()], $this->pos2[$player->getName()], $options);
     }
 
+    //TODO: Create options to parse.
     private function parseOptions(array $data) {
       if(!isset($data[1])) {
-        return;
+        return [];
       } else {
         array_shift($data);
         return $data;
