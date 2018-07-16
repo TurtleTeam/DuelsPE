@@ -23,7 +23,7 @@
 
     public function loadArena($data) {
       if($this->plugin->getServer()->isLevelLoaded($data["level"]) == false) {
-        $this->plugin->getServer()->loadLevel($this->plugin->getServer()->getLevelByName($data["level"]));
+        $this->plugin->getServer()->loadLevel($data["level"]);
       }
 
       //TODO: Fix this.
