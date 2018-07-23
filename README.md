@@ -48,6 +48,10 @@ A: This is a question you should be asking yourself. Frankly, I won't(and can't)
 
 -> /duel [username] - Sends a duel request to another player
 
+### API Docs:
+
+ - Currently, you can detect when a match starts and ends by listening for corytortoise\DuelsPE\events\GameStartEvent and corytortoise\DuelsPE\events\GameEndEvent, respectively. You can get both the Player objects and the Arena object from both of these events. 
+
 ### Credits:
 
  - Much of the kit system is inspired by AdvancedKits by Luca28pet. 

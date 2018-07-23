@@ -6,7 +6,7 @@
 ####################
 #Message Prefix
 prefix: "&l&7[&e»&r&cDuelsPE&e&l«&7]&r"
-#Creating an Arena
+#Creating an BaseArena
 no-perm: "&cYou do not have permission to create Arenas!"
 #Command Usage
 command-usage: "&6Usage: /duel [join | quit | 1 | 2 | create]"

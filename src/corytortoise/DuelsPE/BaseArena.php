@@ -10,7 +10,7 @@
   namespace corytortoise\DuelsPE;
 
   use pocketmine\level\Location;
-  use pocketmine\item\Item;
+  use pocketmine\item\ItemFactory;
   use pocketmine\entity\Effect;
   use pocketmine\entity\EffectInstance;
   use pocketmine\item\enchantment\Enchantment;
@@ -18,14 +18,14 @@
 
   use corytortoise\DuelsPE\GameManager;
 
-  class Arena {
+  class BaseArena {
 
     private $manager;
 
-    private $spawn1;
-    private $spawn2;
+    public $spawn1;
+    public $spawn2;
 
-    private $players = array();
+    private $players = [];
 
     private $active = false;
 
@@ -128,6 +128,7 @@
       $p->sendPopup(str_replace("%t", $m . ":" . $s, Main::getMessage("duel-timer")));
     }
 
+    //Maybe move this to a KitHandler class later, since kits don't rely on BaseArena. Or, let Arenas have different kits?
     public function kitHandler($players) {
       if(!$this->manager->plugin->getConfig()->get("force-kits")) {
         return;
@@ -137,12 +138,14 @@
          $kitData[] = $data;
         }
         foreach($players as $p) {
+          $p->getInventory()->clearAll();
+          $p->getArmorInventory()->clearAll();
           if($kitData["type"] === "custom") {
             foreach($kitData["items"] as $itemData) {
               $parsedData = explode(":", $itemData);
-              $item = Item::get($parsedData[0], $parsedData[1], $parsedData[2]);
+              $item = ItemFactory::get($parsedData[0], $parsedData[1], $parsedData[2]);
               $enchData = array_slice($itemData, 3);
-              //Credits to AdvancedKits by Luca28pet for this.
+              //Reference: AdvancedKits by Luca28pet.
               foreach($enchData as $key => $ench) {
                 if($key % 2 === 0) {
                   $item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment($ench), ($enchData[$key + 1])));
@@ -151,18 +154,26 @@
               $p->getInventory()->addItem($item);
             }
               foreach($kitData["armor"] as $type => $data) {
+                $parsedData = explode(":", $data);
+                $enchData = array_slice($parsedData, 2);
+                $item = ItemFactory::get($parsedData[0], $parsedData[1]);
+                foreach($enchData as $key => $ench) {
+                  if($key % 2 === 0) {
+                    $item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment($ench), ($enchData[$key  + 1])));
+                  }
+                }
                 switch($type) {
                   case "helmet":
-
+                    $p->getArmorInventory()->setHelmet($item);
                     break;
                   case "chestplate":
-
+                    $p->getArmorInventory()->setChestplate($item);
                     break;
                   case "leggings":
-
+                    $p->getArmorInventory()->setLeggings($item);
                     break;
                   case "boots":
-
+                    $p->getArmorInventory()->setBoots($item);
                     break;
                 }
               }
@@ -195,7 +206,13 @@
     public function endMatch($winner) {
       if($this->manager->plugin->getConfig()->get("duel-end-type") === "all") {
         $loser = $this->getOpponent($winner);
+        if($this->manager->plugin->getConfig()->get("force-kits")) {
+          $winner->getInventory->clearAll();
+          $winner->getArmorInventory->clearAll();
+        }
         $this->manager->plugin->getServer()->broadcastMessage($this->manager->plugin->getPrefix() . str_replace(["%w", "%l"], [$winner->getName(), $loser->getName()], Main::getMessage("duel-end")));
+        $this->manager->plugin->callEvent("end", $this);
+        $this->restartArena();
         }
     }
 
@@ -207,10 +224,26 @@
       foreach($this->players as $player) {
         if($player->isOnline()) {
           $player->sendMessage($this->manager->plugin->getPrefix() . "Duel was stopped because " . $cause);
+          if($this->manager->plugin->getConfig()->get("force-kits")) {
+            $player->getInventory()->clearAll();
+            $player->getInventory()->clearAll();
+          }
           $player->teleport($player->getSpawn());
 
         }
       }
+      $this->restartArena();
+    }
+
+    /**
+     * This method clears attributes of BaseArena to prepare it for the next set of players.
+     */
+    protected function restartArena() {
+      $this->beforeMatch = $this->manager->plugin->config->get("match-countdown");
+      $this->matchTime = $this->manager->plugin->config->get("time-limit");
+      $this->timer = $this->beforeMatch + $this->matchTime;
+      $this->players = [];
+      $this->active = false;
     }
 
   }

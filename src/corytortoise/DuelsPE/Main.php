@@ -16,7 +16,6 @@
 
   //Plugin Files
 
-  use corytortoise\DuelsPE\tasks\SignUpdateTask;
   use corytortoise\DuelsPE\EventListener;
   use corytortoise\DuelsPE\tasks\GameTimer;
   use corytortoise\DuelsPE\commands\DuelCommand;
@@ -42,7 +41,7 @@
     public $signDelay;
 
     /*** Players in Queue ***/
-    public $queue = array();
+    public $queue = [];
 
     /*
     *
@@ -66,8 +65,6 @@
       $this->signDelay = $this->config->get("sign-refresh");
       $timer = new GameTimer($this);
       $this->getScheduler()->scheduleRepeatingTask($timer, 20);
-      $this->signTask = new SignUpdateTask($this);
-      $this->getScheduler()->scheduleRepeatingTask($this->signTask, $this->signDelay * 20);
       $this->loadKit();
       $this->registerCommand();
       $this->getLogger()->notice($this->getPrefix() . TextFormat::YELLOW . "Loading arenas and signs...");
@@ -91,6 +88,17 @@
       }
     }
 
+    public function registerArena(BaseArena $arena) {
+      $pos1 = $arena->spawn1;
+      $pos2 = $arena->spawn2;
+      $data = [];
+      array_push($data, $pos1->getLevel()->getFolderName());
+      array_push($data, implode(":", [round($pos1->getX(), 2), round($pos1->getY(), 2), round($pos1->getZ(), 2), round($pos1->getYaw(), 2), round($pos1->getPitch(), 2)]));
+      array_push($data, implode(":", [round($pos2->getX(), 2), round($pos2->getY(), 2), round($pos2->getZ(), 2), round($pos2->getYaw(), 2), round($pos2->getPitch(), 2)]));
+      $this->data->set("arenas", array_push($this->data->get("arenas"), $data));
+      $this->data->save();
+    }
+
     private function loadSigns() {
       foreach($this->data->get("signs") as $sign) {
         if($this->getServer()->isLevelLoaded($sign[3]) !== true) {
@@ -100,6 +108,13 @@
 
       }
     }
+
+    public function onDisable() {
+      $this->manager->shutDown();
+      $this->config->save();
+      $this->data->save();
+    }
+
 
     /**
      *
@@ -223,9 +238,9 @@
 
     /**
      *
-     * @param \corytortoise\DuelsPE\Arena $arena
+     * @param \corytortoise\DuelsPE\BaseArena $arena
      */
-    public function endMatch(Arena $arena) {
+    public function endMatch(BaseArena $arena) {
         $arena->stop();
     }
 
@@ -233,7 +248,7 @@
     * This function will return true if a Player is in the defined arena.
     * It will return false if they are not. Leave $arena null to return the arena they are in.
     * @var Player $player
-    * @var Arena $arena
+    * @var BaseArena $arena
     */
     public function getMatchFromPlayer($player, $arena = null) {
       if($arena == null) {
@@ -273,10 +288,6 @@
       return count($this->manager->getActiveArenas());
     }
 
-    public function onDisable() {
-      $this->manager->shutDown();
-      $this->config->save();
-    }
 
   }
 
