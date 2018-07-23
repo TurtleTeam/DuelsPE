@@ -7,5 +7,5 @@ description: 1vs1 plugin for PocketMine-MP based on Minifixio's 1vs1 plugin.
 
 commands:
   duel:
-    description: Main Duels command. Create, Join, or Delete an Arena.
+    description: Main Duels command. Create, Join, or Delete an BaseArena.
     usage: "/duel <join | quit | 1 | 2 | create> [args]"

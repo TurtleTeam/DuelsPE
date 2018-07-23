@@ -88,7 +88,7 @@
       }
     }
 
-    public function registerArena(Arena $arena) {
+    public function registerArena(BaseArena $arena) {
       $pos1 = $arena->spawn1;
       $pos2 = $arena->spawn2;
       $data = [];
@@ -238,9 +238,9 @@
 
     /**
      *
-     * @param \corytortoise\DuelsPE\Arena $arena
+     * @param \corytortoise\DuelsPE\BaseArena $arena
      */
-    public function endMatch(Arena $arena) {
+    public function endMatch(BaseArena $arena) {
         $arena->stop();
     }
 
@@ -248,7 +248,7 @@
     * This function will return true if a Player is in the defined arena.
     * It will return false if they are not. Leave $arena null to return the arena they are in.
     * @var Player $player
-    * @var Arena $arena
+    * @var BaseArena $arena
     */
     public function getMatchFromPlayer($player, $arena = null) {
       if($arena == null) {

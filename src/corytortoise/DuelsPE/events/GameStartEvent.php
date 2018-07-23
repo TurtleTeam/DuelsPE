@@ -13,22 +13,22 @@
   use pocketmine\Player;
 
   use corytortoise\DuelsPE\Main;
-  use corytortoise\DuelsPE\Arena;
+  use corytortoise\DuelsPE\BaseArena;
 
   class GameStartEvent extends PluginEvent {
 	/** @var Main */
 	private $plugin;
 	/** @var Player[] */
 	private $players = array();
-	/** @var Arena */
+	/** @var BaseArena */
 	private $arena;
 
 	 /**	
  	 * @param Main	 	$plugin
 	 * @param Array		$players
-	 * @param Arena		$arena
+	 * @param BaseArena		$arena
 	 */
-	public function __construct(Main $plugin, Array $players, Arena $arena) {
+	public function __construct(Main $plugin, Array $players, BaseArena $arena) {
 		parent::__construct($plugin);
 		$this->plugin = $plugin;
 		$this->players = $players;
@@ -40,7 +40,7 @@
 		return $this->players;
 	}
 
-	/** @return Arena */
+	/** @return BaseArena */
 	public function getArena() {
 		return $this->arena;
 	}

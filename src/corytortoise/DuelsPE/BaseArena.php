@@ -18,7 +18,7 @@
 
   use corytortoise\DuelsPE\GameManager;
 
-  class Arena {
+  class BaseArena {
 
     private $manager;
 
@@ -128,7 +128,7 @@
       $p->sendPopup(str_replace("%t", $m . ":" . $s, Main::getMessage("duel-timer")));
     }
 
-    //Maybe move this to a KitHandler class later, since kits don't rely on Arena. Or, let Arenas have different kits?
+    //Maybe move this to a KitHandler class later, since kits don't rely on BaseArena. Or, let Arenas have different kits?
     public function kitHandler($players) {
       if(!$this->manager->plugin->getConfig()->get("force-kits")) {
         return;
@@ -236,7 +236,7 @@
     }
 
     /**
-     * This method clears attributes of Arena to prepare it for the next set of players.
+     * This method clears attributes of BaseArena to prepare it for the next set of players.
      */
     protected function restartArena() {
       $this->beforeMatch = $this->manager->plugin->config->get("match-countdown");

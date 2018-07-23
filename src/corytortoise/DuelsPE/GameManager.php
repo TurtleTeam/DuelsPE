@@ -10,7 +10,7 @@
   namespace corytortoise\DuelsPE;
 
   use corytortoise\DuelsPE\Main;
-  use corytortoise\DuelsPE\Arena;
+  use corytortoise\DuelsPE\BaseArena;
 
   class GameManager {
 
@@ -29,18 +29,18 @@
       //TODO: Fix this.
       $spawn1 = new Location($data[0][0], $data[0][1], $data[0][2], $data[0][3], $data[0][4], $data["level"]);
       $spawn2 = new Location($data[1][0], $data[1][1], $data[1][2], $data[1][3], $data[1][4], $data["level"]);
-      $arena = new Arena($this, $spawn1, $spawn2);
+      $arena = new BaseArena($this, $spawn1, $spawn2);
       array_push($this->arenas, $arena);
     }
 
     public function createArena($pos1, $pos2, $options = []) {
-      $arena = new Arena($this, $pos1, $pos2);
+      $arena = new BaseArena($this, $pos1, $pos2);
       array_push($this->arenas, $arena);
       $this->plugin->registerArena($arena);
     }
 
     /**
-     * Starts an Arena, beginning with pre-match countdown.
+     * Starts an BaseArena, beginning with pre-match countdown.
      * @param Player[] $players
      */
     public function startArena(array $players) {
@@ -73,7 +73,7 @@
     * Gets the arena of a Player.
     * TODO: Use Player ID instead of Username for player management
     * @param Player $player
-    * @return Arena $arena
+    * @return BaseArena $arena
     */
     public function getPlayerArena($player) {
       foreach($this->arenas as $arena) {
@@ -95,7 +95,7 @@
 
     /**
      * Returns an array of all loaded arenas
-     * @return Arena[] $arenas
+     * @return BaseArena[] $arenas
      */
     public function getArenas() {
       return $this->arenas;
