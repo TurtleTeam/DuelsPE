@@ -105,8 +105,7 @@
     }
 
     private function savePosition(Player $sender, int $spawnpoint = 1) {
-      //TODO: There must be a better way to save Locations. Maybe look into the methods PM uses?
-      $pos = array($sender->getX(), $sender->getY(), $sender->getZ(), $sender->getYaw(), $sender->getPitch(), $sender->getLevel());
+      $pos = $sender->getLocation();
       if($spawnpoint === 1) {
         $this->pos1[$sender->getName()] = $pos;
         return;

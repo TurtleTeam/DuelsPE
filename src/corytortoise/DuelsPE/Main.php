@@ -13,6 +13,7 @@
   use pocketmine\Player;
   use pocketmine\utils\Config;
   use pocketmine\utils\TextFormat;
+  use pocketmine\tile\Sign;
 
   //Plugin Files
 
@@ -91,10 +92,29 @@
     public function registerArena(BaseArena $arena) {
       $pos1 = $arena->spawn1;
       $pos2 = $arena->spawn2;
-      $data = [];
-      array_push($data, $pos1->getLevel()->getFolderName());
-      array_push($data, implode(":", [round($pos1->getX(), 2), round($pos1->getY(), 2), round($pos1->getZ(), 2), round($pos1->getYaw(), 2), round($pos1->getPitch(), 2)]));
-      array_push($data, implode(":", [round($pos2->getX(), 2), round($pos2->getY(), 2), round($pos2->getZ(), 2), round($pos2->getYaw(), 2), round($pos2->getPitch(), 2)]));
+      $data =
+      [
+        "Name" => $arena->name,
+        "level" => $pos1->getLevel(),
+        "spawn1" =>
+        [
+          "x" => $pos1->getX(),
+          "y" => $pos1->getY(),
+          "z" => $pos1->getZ(),
+          "yaw" => $pos1->getYaw(),
+          "pitch" => $pos1->getPitch()
+        ],
+
+        "spawn2" =>
+        [
+          "x" => $pos2->getX(),
+          "y" => $pos2->getY(),
+          "z" => $pos2->getZ(),
+          "yaw" => $pos2->getYaw(),
+          "pitch" => $pos2->getPitch()
+        ],
+        "options" => $arena->options
+      ];
       $this->data->set("arenas", array_push($this->data->get("arenas"), $data));
       $this->data->save();
     }
@@ -105,7 +125,12 @@
           $this->getServer()->loadLevel($sign[3]);
         }
         $level = $this->getServer()->getLevelByName($sign[3]);
-
+        $tile = $level->getTile(new Vector3($sign[0], $sign[1], $sign[2]));
+        if($tile instanceof Sign) {
+          $this->updateSign($tile);
+        } else {
+          $this->getServer()->getLogger()->warning($this->getPrefix() . "Sign tile not found at: " . $sign[0] . ", " . $sign[1] . ", " . $sign[2] . " in Level " . $sign[3]);
+        }
       }
     }
 
@@ -170,7 +195,12 @@
 
     public function registerDuelSign(Block $block) {
       $this->data->set("signs", implode(":", [$block->getX(), $block->getY(), $block->getZ(), $block->getLevel()->getName()]));
+      $this->data->save();
       return [$this->getPrefix(), TextFormat::WHITE . count($this->manager->getFreeArenas()) . "/" . $this->getArenaCount() . " Free Arenas", TextFormat::WHITE . "1vs1", TextFormat::WHITE . "Tap to Join"];
+    }
+
+    public function updateSign(Sign $sign) {
+      $sign->setLine(1, TextFormat::WHITE . count($this->manager->getFreeArenas()) . '/' . $this->getArenaCount() . ' Free Arenas');
     }
 
     public function removeDuelSign(Block $block) {

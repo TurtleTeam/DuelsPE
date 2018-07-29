@@ -22,8 +22,10 @@
 
     private $manager;
 
+    public $name;
     public $spawn1;
     public $spawn2;
+    public $options = [];
 
     private $players = [];
 
